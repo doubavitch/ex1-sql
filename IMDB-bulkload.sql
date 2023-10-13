@@ -48,28 +48,41 @@ SELECT * FROM Ratings LIMIT 100; */
 
 DROP Table IF EXISTS Movie;
 CREATE TABLE Movie(
-	tid 	char(100),
-	title 	char(10),
-	year	numeric,
-	length	numeric,
+	tid 	char(10),
+	title 	varchar(1024),
+	year	int,
+	length	int,
 	rating	numeric
 );
 
 DROP Table IF EXISTS Director;
 CREATE TABLE Director(
-	nid 		char(100),
-	name		char(10),
-	birthYear	numeric,
-	deathYear	numeric
+	nid 		char(10),
+	name		varchar(128),
+	birthYear	int,
+	deathYear	int
 );
 
 DROP Table IF EXISTS Actor;
 CREATE TABLE Actor(
-	nid			char(100),
-	name		char(10),
-	birthYear	numeric,
-	deathYear	numeric
+	nid			char(10),
+	name		varchar(128),
+	birthYear	int,
+	deathYear	int
 );
 
-INSERT INTO Actor (SELECT DISTINCT primaryName AS name, birthYear AS birthYear, deathYear AS deathYear 
-				   FROM Persons WHERE persons.primaryProfession = 'actor' OR persons.primaryProfession = 'actress');
+INSERT INTO Movie (SELECT DISTINCT Titles.tid AS tid, Titles.originaltitle AS Title,Titles.runtimeMinutes AS length, Titles.startYear AS year, Ratings.avg_rating AS rating
+				  FROM Titles,Ratings
+				  WHERE Titles.tid = Ratings.tid AND Titles.ttype='movie' AND Ratings.num_votes >= 10000
+				  ORDER BY Ratings.avg_rating DESC
+				  LIMIT 5000);
+
+INSERT INTO Actor (SELECT DISTINCT Persons.nid AS nid, primaryName AS name, Persons.birthYear AS birthYear, Persons.deathYear AS deathYear 
+				   FROM Persons, Titles, Ratings ,Movie
+				   WHERE persons.primaryProfession = 'actor' OR persons.primaryProfession = 'actress' AND Persons.knownForTitles LIKE '%' + Movie.tid + '%');
+INSERT INTO Director (SELECT DISTINCT Persons.nid AS nid, primaryName AS name, birthYear AS birthYear, deathYear AS deathYear 
+				   FROM Persons,Movie 
+				   WHERE persons.primaryProfession = 'director' AND Persons.knownForTitles LIKE '%' + Movie.tid + '%');
+
+
+			
