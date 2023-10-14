@@ -71,18 +71,22 @@ CREATE TABLE Actor(
 	deathYear	int
 );
 
+DELETE FROM Movie WHERE TRUE;
 INSERT INTO Movie (SELECT DISTINCT Titles.tid AS tid, Titles.originaltitle AS Title,Titles.runtimeMinutes AS length, Titles.startYear AS year, Ratings.avg_rating AS rating
 				  FROM Titles,Ratings
 				  WHERE Titles.tid = Ratings.tid AND Titles.ttype='movie' AND Ratings.num_votes >= 10000
 				  ORDER BY Ratings.avg_rating DESC
 				  LIMIT 5000);
 
+DELETE FROM Actor WHERE TRUE;
 INSERT INTO Actor (SELECT DISTINCT Persons.nid AS nid, primaryName AS name, Persons.birthYear AS birthYear, Persons.deathYear AS deathYear 
-				   FROM Persons, Titles, Ratings ,Movie
-				   WHERE persons.primaryProfession = 'actor' OR persons.primaryProfession = 'actress' AND Persons.knownForTitles LIKE '%' + Movie.tid + '%');
+				   FROM Persons,Movie
+				   WHERE persons.primaryProfession = 'actor' OR persons.primaryProfession = 'actress' AND Cast(Persons.knownForTitles as char) LIKE (CONCAT(Cast('%' as char),Movie.tid,Cast('%' as char))));
+				   
+DELETE FROM DIRECTOR WHERE TRUE;
 INSERT INTO Director (SELECT DISTINCT Persons.nid AS nid, primaryName AS name, birthYear AS birthYear, deathYear AS deathYear 
 				   FROM Persons,Movie 
-				   WHERE persons.primaryProfession = 'director' AND Persons.knownForTitles LIKE '%' + Movie.tid + '%');
+				   WHERE persons.primaryProfession = 'director' AND Persons.knownForTitles LIKE CONCAT('%',Movie.tid,'%'));
 
 
 			
