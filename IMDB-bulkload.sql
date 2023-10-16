@@ -2,6 +2,11 @@
 -- 1) all input files in TSV format need to be located in a directory that is accessible by Postgres (e.g. /tmp)
 -- 2) the first header line (with the column names) needs to be removed for the COPY commands to work properly
 
+-- NOTE: The code to import the data into Persons, Titles,... is commented to avoid having to run
+--			intensive code multiple times, DONT FORGET TO UNCOMMENT FOR SUBMISSION
+
+--Exercise 1 a) ----------------------------------------------------------------------
+
 /*DROP TABLE IF EXISTS Persons;
 CREATE TABLE Persons (
 	nid char(10),
@@ -46,6 +51,20 @@ CREATE TABLE Ratings (
 COPY Ratings FROM '/tmp/title.ratings.tsv' NULL '\N' ENCODING 'UTF8';
 SELECT * FROM Ratings LIMIT 100; */
 
+-- Exercise 1 b) ----------------------------------------------------------------------
+
+DROP Table IF EXISTS Directs;
+CREATE TABLE Directs(
+	nid char(10),
+	tid char(10)
+);
+
+DROP Table IF EXISTS Starsin;
+CREATE TABLE Starsin(
+	nid char(10),
+	tid char(10)
+);
+
 DROP Table IF EXISTS Movie;
 CREATE TABLE Movie(
 	tid 	char(10),
@@ -71,6 +90,8 @@ CREATE TABLE Actor(
 	deathYear	int
 );
 
+-- Exercise 1 c) ----------------------------------------------------------------------
+
 DELETE FROM Movie WHERE TRUE;
 INSERT INTO Movie (SELECT DISTINCT Titles.tid AS tid, Titles.originaltitle AS Title,Titles.runtimeMinutes AS length, Titles.startYear AS year, Ratings.avg_rating AS rating
 				  FROM Titles,Ratings
@@ -78,15 +99,55 @@ INSERT INTO Movie (SELECT DISTINCT Titles.tid AS tid, Titles.originaltitle AS Ti
 				  ORDER BY Ratings.avg_rating DESC
 				  LIMIT 5000);
 
+DELETE FROM Directs WHERE TRUE;
+INSERT INTO Directs(SELECT DISTINCT Principals.nid as nid, Principals.tid as tid
+				   FROM Principals,Movie
+				   WHERE Principals.category = 'director' AND Movie.tid = Principals.tid);
+				   
+DELETE FROM Starsin WHERE TRUE;
+INSERT INTO Starsin(SELECT DISTINCT Principals.nid as nid, Principals.tid as tid 
+				   FROM Principals,Movie
+				   WHERE Movie.tid = Principals.tid AND (Principals.category = 'actor' OR Principals.category = 'actress'));
+
 DELETE FROM Actor WHERE TRUE;
 INSERT INTO Actor (SELECT DISTINCT Persons.nid AS nid, primaryName AS name, Persons.birthYear AS birthYear, Persons.deathYear AS deathYear 
-				   FROM Persons,Movie
-				   WHERE persons.primaryProfession = 'actor' OR persons.primaryProfession = 'actress' AND Cast(Persons.knownForTitles as char) LIKE (CONCAT(Cast('%' as char),Movie.tid,Cast('%' as char))));
+				   FROM Persons,Starsin
+				   WHERE Persons.nid = Starsin.nid);
 				   
-DELETE FROM DIRECTOR WHERE TRUE;
+DELETE FROM Director WHERE TRUE;
 INSERT INTO Director (SELECT DISTINCT Persons.nid AS nid, primaryName AS name, birthYear AS birthYear, deathYear AS deathYear 
-				   FROM Persons,Movie 
-				   WHERE persons.primaryProfession = 'director' AND Persons.knownForTitles LIKE CONCAT('%',Movie.tid,'%'));
+				   FROM Persons,Directs
+				   WHERE Directs.nid = Persons.nid);
+				   
+-- EXERCISE 1 d) ----------------------------------------------------------------------
+/*NOTE: We suppose that no two movies have the same name in the same year
+We could assume that no two persons in the persons table have the same name 
+and birthyear, but this assumption seems much more unlikely to hold
+The following are non trivial functional dependencies
+Movie:
+- title,year -> length,rating
+- tid -> title,year,length,rating
+Actor:
+- nid -> name, birthyear, deathyear
+Director:
+- nid -> name, birthyear, deathyear
+
+Thus the key of Movie is tid or (title,year), the key of Director and Actor is nid
+
+Normal forms:
+Movie:
+-BCNF as the only non trivial FD's are determined by a key of Movie
+
+Actor and Director:
+(these two tables have the same structure and will have the same NF
+-BCNF as the only non trivial FD's are determined by the key of the table
+
+*/
+
+-- EXERCISE 2 a) ----------------------------------------------------------------------
 
 
-			
+
+
+
+
