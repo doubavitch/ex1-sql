@@ -7,7 +7,7 @@
 
 --Exercise 1 a) ----------------------------------------------------------------------
 
-/*DROP TABLE IF EXISTS Persons;
+DROP TABLE IF EXISTS Persons;
 CREATE TABLE Persons (
  nid char(10),
  primaryName varchar(128),
@@ -15,7 +15,7 @@ CREATE TABLE Persons (
  deathYear int,
  primaryProfession varchar(128),
  knownForTitles varchar(128));
-COPY Persons FROM '/tmp/name.basics.tsv' NULL '\N' ENCODING 'UTF8';
+COPY Persons FROM '/tmp/name.basics.tsv' NULL '\N' ENCODING 'UTF8' DELIMITER E'\t' QUOTE E'\b' CSV HEADER;
 SELECT * FROM Persons LIMIT 100;
 
 DROP TABLE IF EXISTS Titles;
@@ -29,7 +29,7 @@ CREATE TABLE Titles (
  endYear int,
  runtimeMinutes int,
  genres varchar(256));
-COPY Titles FROM '/tmp/title.basics.tsv' NULL '\N' ENCODING 'UTF8';
+COPY Titles FROM '/tmp/title.basics.tsv' NULL '\N' ENCODING 'UTF8' DELIMITER E'\t' QUOTE E'\b' CSV HEADER;
 SELECT * FROM Titles LIMIT 100;
      
 DROP TABLE IF EXISTS Principals;
@@ -40,7 +40,7 @@ CREATE TABLE Principals (
  category varchar(32),
  job varchar(512),
  characters varchar(2048));
-COPY Principals FROM '/tmp/title.principals.tsv' NULL '\N' ENCODING 'UTF8';
+COPY Principals FROM '/tmp/title.principals.tsv' NULL '\N' ENCODING 'UTF8' DELIMITER E'\t' QUOTE E'\b' CSV HEADER;
 SELECT * FROM Principals LIMIT 100;
     
 DROP TABLE IF EXISTS Ratings;
@@ -48,8 +48,8 @@ CREATE TABLE Ratings (
         tid char(10),
         avg_rating numeric,
         num_votes numeric);
-COPY Ratings FROM '/tmp/title.ratings.tsv' NULL '\N' ENCODING 'UTF8';
-SELECT * FROM Ratings LIMIT 100; */
+COPY Ratings FROM '/tmp/title.ratings.tsv' NULL '\N' ENCODING 'UTF8' DELIMITER E'\t' QUOTE E'\b' CSV HEADER;
+SELECT * FROM Ratings LIMIT 100; 
 
 -- Exercise 1 b) ----------------------------------------------------------------------
 
