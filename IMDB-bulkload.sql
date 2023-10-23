@@ -300,22 +300,30 @@ SELECT *
 FROM Directs;
 
 -- A-Priori Step 1: Materialize the frequent 1-itemsets into a new table Baskets1
-CREATE OR REPLACE VIEW Co_Occurences1 AS (
-  SELECT w1.nid AS Movie1, w2.nid AS Movie2
-  FROM WorksOn w1, WorksOn w2
-  WHERE EXISTS (
-    SELECT u1.name AS Person1, u2.name AS Person2 
-	  FROM UnionActorDirector u1, UnionActorDirector u2
-	  WHERE u1.nid = w1.nid 
-	  	AND u2.nid = w2.nid
-	    AND w1.nid = w2.nid 
-	  GROUP BY u1.name, u2.name, w1.nid 
-	  HAVING COUNT(u1.name)>=4
-  )
+
+DROP TABLE IF EXISTS Co_Occurences1;
+CREATE TABLE Co_Occurences1(
+	nid1 char(10),
+	nid2 char(10),
+	name1 varchar(128),
+	name2 varchar(128)
 );
 
-
-
-
+DELETE FROM Co_Occurences1;
+INSERT INTO Co_Occurences1(
+	SELECT DISTINCT person1.nid as nid1, person2.nid as nid2, person1.name as name1, person2.name as name2
+	FROM UnionActorDirector as person1, UnionActorDirector as person2, WorksOn as w1, WorksOn as w2
+	WHERE person1.nid = w1.nid and 
+		  person2.nid = w2.nid and 
+		  w1.tid = w2.tid 	   and
+		  person1.nid < person2.nid
+	GROUP BY person1.nid, person2.nid, person1.name, person2.name
+	HAVING COUNT(person1.name) >= 4
+);
+SELECT * FROM Co_Occurences1
+ORDER BY nid1
+LIMIT 200; 
 
 -- Exercise 3 d) ----------------------------------------------------------------------
+
+
