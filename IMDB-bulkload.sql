@@ -229,7 +229,12 @@ DROP VIEW new_direct;
 SELECT * FROM Actor WHERE name = 'Robert De Niro';
 --the nid is "nm0000134 "
 SELECT * FROM Director WHERE name = 'Robert De Niro';
---Why does he not exists before ? 
+--He does not exist. Why does he not exists before ? 
+
+SELECT * FROM Starsin WHERE nid = 'nm0000134';
+--get back 33 entries (director/Movie)
+
+
 
 --To delete the actor and director Robert De Niro
 
@@ -238,6 +243,23 @@ WHERE name = 'Robert De Niro';
 
 DELETE FROM Director
 WHERE name = 'Robert De Niro';
+
+SELECT * FROM Starsin WHERE nid = 'nm0000134';
+--as expected it's empty, since the cascading works
+
+-- Exercise 2 d) ----------------------------------------------------------------------
+--Show an insertion that is not allowed according to your foreign keys
+
+INSERT INTO directs(nid,tid)
+VALUES('123456789','tt0012345');
+
+--Show an update that is not allowed according to your foreign keys
+
+UPDATE directs 
+SET nid='nm0000134'
+WHERE tid='tt0046345'
+
+
 
 -- Exercise 3 a) ----------------------------------------------------------------------
 SELECT Director.name, COUNT(*) AS Directed_Movies
