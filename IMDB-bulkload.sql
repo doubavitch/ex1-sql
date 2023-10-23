@@ -6,7 +6,7 @@
 --			intensive code multiple times, DONT FORGET TO UNCOMMENT FOR SUBMISSION
 
 --Exercise 1 a) ----------------------------------------------------------------------
-/*
+
 DROP TABLE IF EXISTS Persons;
 CREATE TABLE Persons (
 	nid char(10),
@@ -50,7 +50,7 @@ CREATE TABLE Ratings (
         num_votes numeric);
 COPY Ratings FROM '/tmp/title.ratings.tsv' NULL '\N' ENCODING 'UTF8';
 SELECT * FROM Ratings LIMIT 100;
-*/
+
 -- Exercise 1 b) ----------------------------------------------------------------------
 
 DROP Table IF EXISTS Directs;
@@ -217,7 +217,7 @@ WHERE nid='123456789';
 --Now we verify that they are indeed the same
     SELECT * FROM old_direct
 EXCEPT
-    SELECT * FROM new_direct
+    SELECT * FROM new_direct;
 --check that this is empty so they are indeed the same set
 
 DROP VIEW old_direct;
@@ -310,8 +310,9 @@ CREATE OR REPLACE VIEW Co_Occurences1 AS (
 	  	AND u2.nid = w2.nid
 	    AND w1.nid = w2.nid 
 	  GROUP BY u1.name, u2.name, w1.nid 
-	  HAVING COUNT(u1.name)>=4)
-  );
+	  HAVING COUNT(u1.name)>=4
+  )
+);
 
 
 
