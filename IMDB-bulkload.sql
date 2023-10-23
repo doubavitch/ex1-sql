@@ -6,7 +6,7 @@
 --			intensive code multiple times, DONT FORGET TO UNCOMMENT FOR SUBMISSION
 
 --Exercise 1 a) ----------------------------------------------------------------------
-
+/*
 DROP TABLE IF EXISTS Persons;
 CREATE TABLE Persons (
 	nid char(10),
@@ -50,7 +50,7 @@ CREATE TABLE Ratings (
         num_votes numeric);
 COPY Ratings FROM '/tmp/title.ratings.tsv' NULL '\N' ENCODING 'UTF8';
 SELECT * FROM Ratings LIMIT 100;
-
+*/
 -- Exercise 1 b) ----------------------------------------------------------------------
 
 DROP Table IF EXISTS Directs;
@@ -189,6 +189,14 @@ ON UPDATE CASCADE;
 --SELECT * FROM Director WHERE name = 'Steven Spielberg';
 --the nid is "nm0000229 "
 
+--SELECT * FROM directs
+--WHERE nid='nm0000229'
+--get back 26 entries (director/movie)
+
+CREATE VIEW old_direct AS
+SELECT * FROM directs
+WHERE nid='nm0000229';
+
 -- To update the nid of Steven Spielberg
 UPDATE Director
 SET nid = '123456789'
@@ -198,8 +206,33 @@ WHERE name = 'Steven Spielberg';
 --SELECT * FROM Director WHERE name = 'Steven Spielberg';
 --the nid is "123456789"
 
+--SELECT * FROM directs
+--WHERE nid='123456789';
+--get back the same 26 entries (director/movie)
+
+CREATE VIEW new_direct AS
+SELECT * FROM directs
+WHERE nid='123456789';
+
+--Now we verify that they are indeed the same
+    SELECT * FROM old_direct
+EXCEPT
+    SELECT * FROM new_direct
+--check that this is empty so they are indeed the same set
+
+DROP VIEW old_direct;
+DROP VIEW new_direct;
+
+
 -- EXERCISE 2 c) ----------------------------------------------------------------------
--- To delete the actor and director Robert De Niro
+--Get the nid of Actor and Director Robert De Niro
+SELECT * FROM Actor WHERE name = 'Robert De Niro';
+--the nid is "nm0000134 "
+SELECT * FROM Director WHERE name = 'Robert De Niro';
+--Why does he not exists before ? 
+
+--To delete the actor and director Robert De Niro
+
 DELETE FROM Actor
 WHERE name = 'Robert De Niro';
 
