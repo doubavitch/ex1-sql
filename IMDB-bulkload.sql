@@ -118,6 +118,7 @@ DELETE FROM Director WHERE TRUE;
 INSERT INTO Director (SELECT DISTINCT Persons.nid AS nid, primaryName AS name, birthYear AS birthYear, deathYear AS deathYear 
 				   FROM Persons,Directs
 				   WHERE Directs.nid = Persons.nid);
+
 				   
 -- EXERCISE 1 d) ----------------------------------------------------------------------
 /*NOTE: We suppose that no two movies have the same name in the same year
@@ -257,7 +258,7 @@ VALUES('123456789','tt0012345');
 
 UPDATE directs 
 SET nid='nm0000134'
-WHERE tid='tt0046345'
+WHERE tid='tt0046345';
 
 
 
@@ -299,31 +300,61 @@ UNION
 SELECT *
 FROM Directs;
 
--- A-Priori Step 1: Materialize the frequent 1-itemsets into a new table Baskets1
+-- A-Priori Step 1: Materialize the frequent 1-itemsets into a new table Co_Occurences_Duo
 
-DROP TABLE IF EXISTS Co_Occurences1;
-CREATE TABLE Co_Occurences1(
+DROP TABLE IF EXISTS Co_Occurrences_Duo;
+CREATE TABLE Co_Occurrences_Duo(
 	nid1 char(10),
 	nid2 char(10),
 	name1 varchar(128),
-	name2 varchar(128)
+	name2 varchar(128),
+	count_duo int
 );
 
-DELETE FROM Co_Occurences1;
-INSERT INTO Co_Occurences1(
-	SELECT DISTINCT person1.nid as nid1, person2.nid as nid2, person1.name as name1, person2.name as name2
+DELETE FROM Co_Occurrences_Duo;
+INSERT INTO Co_Occurrences_Duo (
+	SELECT DISTINCT person1.nid as nid1, person2.nid as nid2, person1.name as name1, person2.name as name2, COUNT(person1.nid)
 	FROM UnionActorDirector as person1, UnionActorDirector as person2, WorksOn as w1, WorksOn as w2
-	WHERE person1.nid = w1.nid and 
-		  person2.nid = w2.nid and 
-		  w1.tid = w2.tid 	   and
-		  person1.nid < person2.nid
+	WHERE person1.nid = w1.nid 
+	  and person2.nid = w2.nid
+	  and w1.tid = w2.tid
+	  and person1.nid < person2.nid
 	GROUP BY person1.nid, person2.nid, person1.name, person2.name
-	HAVING COUNT(person1.name) >= 4
+	HAVING COUNT(person1.nid) >= 4
+	ORDER BY COUNT(person1.nid) DESC
 );
-SELECT * FROM Co_Occurences1
-ORDER BY nid1
-LIMIT 200; 
+
+SELECT * FROM Co_Occurrences_Duo;
+
 
 -- Exercise 3 d) ----------------------------------------------------------------------
 
+DROP TABLE IF EXISTS Co_Occurrences_Trio;
+CREATE TABLE Co_Occurrences_Trio(
+	nid1 char(10),
+	nid2 char(10),
+	nid3 char(10),
+	name1 varchar(128),
+	name2 varchar(128),
+	name3 varchar(128),
+	count_trio int
+);
+
+DELETE FROM Co_Occurrences_Trio;
+INSERT INTO Co_Occurrences_Trio(
+	SELECT DISTINCT person1.nid as nid1, person2.nid as nid2, person3.nid as nid3, person1.name as name1, person2.name as name2, person3.name as name3, COUNT(person1.nid)
+	FROM UnionActorDirector as person1, UnionActorDirector as person2, UnionActorDirector as person3, WorksOn as w1, WorksOn as w2, WorksOn as w3
+	WHERE person1.nid = w1.nid 
+	  and person2.nid = w2.nid
+	  and person3.nid = w3.nid
+	  and w1.tid = w2.tid
+	  and w2.tid = w3.tid
+	  and person1.nid < person2.nid
+	  and person2.nid < person3.nid
+	GROUP BY person1.nid, person2.nid, person3.nid, person1.name, person2.name, person3.name
+	HAVING COUNT(person1.nid) >= 4
+	ORDER BY COUNT(person1.nid) DESC
+);
+
+SELECT * FROM Co_Occurrences_Trio;
 
