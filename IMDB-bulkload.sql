@@ -1,9 +1,22 @@
 -- NOTES:
--- 1) all input files in TSV format need to be located in a directory that is accessible by Postgres (e.g. /tmp)
--- 2) the first header line (with the column names) needs to be removed for the COPY commands to work properly
+-- -On Windows all the files we worked on were added to a folder called tmp in the root folder (for example C:)
+--    a similar solution was employed on mac
+-- -In exercise 2 d) we give examples of operations that are not allowed, so if the whole code is run at once
+--    an exception will be thrown
+-- GITHUB REPO: https://github.com/doubavitch/ex1-sql
+-- Exercise 1 a) Lines 23-65	(code)
+-- Exercise 1 b) Lines 69-104	(code)
+-- Exercise 1 c) Lines 108-133	(code)
+-- Exercise 1 d) Lines 137-159	(text)
+-- Exercise 2 a) Lines 165-198	(code)
+-- Exercise 2 b) Lines 202-238 	(code + commented code)
+-- Exercise 2 c) Lines 243-248	(code)
+-- Exercise 2 d) Lines 267-274	(code that throws exception intentionally)
+-- Exercise 3 a) Lines 279-286	(code)
+-- Exercise 3 b) Lines 289-296	(code)
+-- Exercise 3 c) Lines 300-340	(code)
+-- Exercise 3 d) Lines 345-372	(code)
 
--- NOTE: The code to import the data into Persons, Titles,... is commented to avoid having to run
---			intensive code multiple times, DONT FORGET TO UNCOMMENT FOR SUBMISSION
 
 --Exercise 1 a) ----------------------------------------------------------------------
 
@@ -16,7 +29,7 @@ CREATE TABLE Persons (
 	primaryProfession varchar(128),
 	knownForTitles varchar(128));
 COPY Persons FROM '/tmp/name.basics.tsv' NULL '\N' ENCODING 'UTF8';
-SELECT * FROM Persons LIMIT 100;
+SELECT * FROM Persons LIMIT 100;  --Selection is made to check our results
 
 DROP TABLE IF EXISTS Titles;
 CREATE TABLE Titles (
@@ -30,7 +43,7 @@ CREATE TABLE Titles (
 	runtimeMinutes int,
 	genres varchar(256));
 COPY Titles FROM '/tmp/title.basics.tsv' NULL '\N' ENCODING 'UTF8';
-SELECT * FROM Titles LIMIT 100;
+SELECT * FROM Titles LIMIT 100;  --Selection is made to check our results
 			  
 DROP TABLE IF EXISTS Principals;
 CREATE TABLE Principals (
@@ -41,7 +54,7 @@ CREATE TABLE Principals (
 	job varchar(512),
 	characters varchar(2048));
 COPY Principals FROM '/tmp/title.principals.tsv' NULL '\N' ENCODING 'UTF8';
-SELECT * FROM Principals LIMIT 100;
+SELECT * FROM Principals LIMIT 100;  --Selection is made to check our results
 		  
 DROP TABLE IF EXISTS Ratings;
 CREATE TABLE Ratings (
@@ -49,7 +62,7 @@ CREATE TABLE Ratings (
         avg_rating numeric,
         num_votes numeric);
 COPY Ratings FROM '/tmp/title.ratings.tsv' NULL '\N' ENCODING 'UTF8';
-SELECT * FROM Ratings LIMIT 100;
+SELECT * FROM Ratings LIMIT 100;  --Selection is made to check our results
 
 -- Exercise 1 b) ----------------------------------------------------------------------
 
@@ -260,9 +273,9 @@ UPDATE directs
 SET nid='nm0000134'
 WHERE tid='tt0046345';
 
-
-
 -- Exercise 3 a) ----------------------------------------------------------------------
+--NOTE: THE CHUNKS OF CODE MUST BE RUN INDIVIDUALLY, AS OTHERWHISE THE RUNTIME GOES FROM A FEW
+--		SECONDS TO NOT EVEN FINISHING IN 30 MIN
 SELECT Director.name, COUNT(*) AS Directed_Movies
 FROM Director
 LEFT JOIN Directs ON Director.nid = Directs.nid
@@ -324,7 +337,7 @@ INSERT INTO Co_Occurrences_Duo (
 	ORDER BY COUNT(person1.nid) DESC
 );
 
-SELECT * FROM Co_Occurrences_Duo;
+SELECT * FROM Co_Occurrences_Duo;  --Selection is made to check our results
 
 
 -- Exercise 3 d) ----------------------------------------------------------------------
@@ -356,5 +369,5 @@ INSERT INTO Co_Occurrences_Trio(
 	ORDER BY COUNT(person1.nid) DESC
 );
 
-SELECT * FROM Co_Occurrences_Trio;
+SELECT * FROM Co_Occurrences_Trio;  --Selection is made to check our results
 
