@@ -16,7 +16,7 @@
 -- Exercise 3 b) Lines 289-296	(code)
 -- Exercise 3 c) Lines 300-340	(code)
 -- Exercise 3 d) Lines 345-372	(code)
-
+-- Solved by: ANDRÉ DANIEL DUSSING() CLARA DUCHOSSOIS(018008823D) YANIS BOSCH(018055031A)
 
 --Exercise 1 a) ----------------------------------------------------------------------
 
